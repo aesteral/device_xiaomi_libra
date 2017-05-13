@@ -77,7 +77,7 @@ int xiaomi_readmac_is_wlan_mac_in_correct_order(uint8_t *mac)
     int i = 0;
     
     // parameter sanity check
-    if (!mac_addr || !memcmp(mac_addr, zeromac, MAC_ADDR_SIZE)) {
+    if (!mac || !memcmp(mac, zeromac, MAC_ADDR_SIZE)) {
         return 1;
     }
     
@@ -110,7 +110,6 @@ int main(void)
 {
     uint8_t *mac_addr = NULL;
     uint8_t zeromac[MAC_ADDR_SIZE] = {0};
-    uint8_t inversed_mac[MAC_ADDR_SIZE] = {0};
     FILE *fp;
 
     // read mac from modem

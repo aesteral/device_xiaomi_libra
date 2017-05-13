@@ -71,7 +71,7 @@ const uint8_t xiaomi_oui_list[XIAOMI_OUI_LIST_SIZE][3] =
 
 int qmi_nv_read_wlan_mac(uint8_t **mac);
 
-int xiaomi_readmac_is_wlan_mac_in_correct_order(uint8_t *mac)
+int xiaomi_is_mac_in_correct_order(uint8_t *mac)
 {
     uint8_t zeromac[MAC_ADDR_SIZE] = {0};
     int i = 0;
@@ -83,7 +83,12 @@ int xiaomi_readmac_is_wlan_mac_in_correct_order(uint8_t *mac)
     
     for(i = 0; i < XIAOMI_OUI_LIST_SIZE; i++) {
         if(mac[0] == xiaomi_oui_list[i][0] && mac[1] == xiaomi_oui_list[i][1] && mac[2] == xiaomi_oui_list[i][2])
-            return 0; // the provided MAC belongs to one of OUIs assigned to Xiaomi
+            return 1; // the provided MAC belongs to one of OUIs assigned to Xiaomi
+    }
+    
+    for(i = 0; i < XIAOMI_OUI_LIST_SIZE; i++) {
+        if(mac[5] == xiaomi_oui_list[i][0] && mac[4] == xiaomi_oui_list[i][1] && mac[3] == xiaomi_oui_list[i][2])
+            return 0; // the provided MAC in reverse order belongs to one of OUIs assigned to Xiaomi
     }
     
     return 1; // the provided MAC does not belong to an OUI assigned to Xiaomi
@@ -103,7 +108,7 @@ int xiaomi_readmac_reverse_mac(uint8_t *mac) {
     mac[2] = mac[3];
     mac[3] = tmp;
     
-    return 0;
+    return 1;
 }
 
 int main(void)
@@ -119,19 +124,10 @@ int main(void)
         return 1;
     }
     
-    if(0 != xiaomi_readmac_is_wlan_mac_in_correct_order(mac_addr)) {
-        if(0 != xiaomi_readmac_reverse_mac(mac_addr)) {
+    if(0 == xiaomi_is_mac_in_correct_order(mac_addr)) {
+        if(0 == xiaomi_readmac_reverse_mac(mac_addr)) {
             ALOGE("xiaomi_readmac_invert_mac error");
             return 1;
-        }
-        // mac_addr now has the address in reverse, we should check if it now conforms to the OUI list
-        if(0 != xiaomi_readmac_is_wlan_mac_in_correct_order(mac_addr)) {
-            // it is still not a correct Xiaomi MAC even after reverse, flip it back since there is no
-            // reason to keep a reversed one
-            if(0 != xiaomi_readmac_reverse_mac(mac_addr)) {
-                ALOGE("xiaomi_readmac_invert_mac error");
-                return 1;
-            }
         }
     }
 

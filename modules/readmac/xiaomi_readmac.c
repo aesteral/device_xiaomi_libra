@@ -28,7 +28,7 @@
 #define WLAN_MAC_BIN               "/data/misc/wifi/wlan_mac.bin"
 #define DRIVER_PROP_NAME           "wlan.driver.status"
 
-const uint8_t xiaomi_oui_list[XIAOMI_OUI_LIST_SIZE][3] = 
+const uint8_t xiaomi_oui_list[XIAOMI_OUI_LIST_SIZE][3] =
 {
     { 0x00, 0x9E, 0xC8 },
     { 0x00, 0xEC, 0x0A },
